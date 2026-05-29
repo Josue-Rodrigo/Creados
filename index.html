@@ -6,6 +6,7 @@
 <link rel="icon" type="image/jpeg" href="Fotos/logo/logo_showreel.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Bebas+Neue&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://player.vimeo.com/api/player.js"></script>
 <style>
     /* Estilos para el Modal (Ventana Emergente) */
 .portfolio-modal {
@@ -240,6 +241,7 @@
   .btn-outline:hover { border-color: var(--green); color: var(--green); }
 
   .hero-visual { display: flex; justify-content: center; align-items: center; position: relative; }
+  #heroVideo iframe { width:100%;height:100%; }
   @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
   .hero-stats {
@@ -1047,10 +1049,10 @@
     </div>
   </div>
   <div class="hero-visual animate delay-2" style="flex-direction:column;gap:20px">
-    <video id="heroVideo" src="Fotos/showreel/showreel_creados.mp4" controls playsinline preload="auto" style="width:100%;max-width:500px;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.15)"></video>
+    <div id="heroVideo" style="width:100%;max-width:500px;aspect-ratio:16/9;background:#000;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.15);overflow:hidden"></div>
     <div class="video-selector" style="display:flex;gap:10px;margin-top:10px;justify-content:center">
-      <button class="video-btn active" data-video="showreel_creados.mp4" onclick="cambiarVideo(this)">Video 1</button>
-      <button class="video-btn" data-video="showreel_creados1.mp4" onclick="cambiarVideo(this)">Video 2</button>
+      <button class="video-btn active" data-video="1196732639" onclick="cambiarVideo(this)">Video 1</button>
+      <button class="video-btn" data-video="1196732638" onclick="cambiarVideo(this)">Video 2</button>
     </div>
     <div class="hero-stats" style="position:static">
       <div class="hero-stats-num">+200</div>
@@ -1215,7 +1217,7 @@
             </div>
         </div>
         <div class="portfolio-item" onclick="openGallery('reels')">
-            <video src="Fotos/Reels/reels_1.mp4" poster="Fotos/Reels/reels_1.jpg" muted playsinline preload="none" style="width:100%;height:100%;object-fit:cover;background:#1a1a1a;" onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;"></video>
+            <img src="Fotos/Reels/reels_1.jpg" alt="Vídeo / Reel" style="width:100%;height:100%;object-fit:cover;background:#1a1a1a;">
             <div class="portfolio-overlay">
                 <h4>Vídeo / Reel</h4>
                 <p>Ver galería completa →</p>
@@ -1653,12 +1655,22 @@ Envío este mensaje desde la página web.`;
     setTimeout(() => { window.open(url, '_blank'); }, 600);
   }
 
+  const heroPlayer = new Vimeo.Player('heroVideo', {
+    id: 1196732639,
+    playsinline: true,
+    byline: false,
+    title: false,
+    portrait: false
+  });
+
   function cambiarVideo(btn) {
-    const video = document.getElementById('heroVideo');
-    const wasPlaying = !video.paused;
-    video.src = `Fotos/showreel/${btn.dataset.video}`;
-    video.load();
-    if (wasPlaying) video.play();
+    const videoId = parseInt(btn.dataset.video);
+    heroPlayer.getPaused().then(function(paused) {
+      heroPlayer.loadVideo(videoId);
+      if (!paused) {
+        heroPlayer.play();
+      }
+    });
     document.querySelectorAll('.video-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
@@ -1682,7 +1694,7 @@ const galleries = {
   'destacados': { title: 'Proyectos Destacados', folder: 'Destacados', prefix: 'proyecto_destacado' },
   'fotos': { title: 'Sesión Fotográfica', folder: 'Sesion_fotos', prefix: 'sesion_foto' },
   'diseno': { title: 'Diseño Gráfico', folder: 'Diseno', prefix: 'diseno_grafico' },
-  'reels': { title: 'Vídeo / Reel', folder: 'Reels', prefix: 'reels_' },
+  'reels': { title: 'Vídeo / Reel', vimeoIds: [1196783193, 1196783190, 1196783192, 1196783194, 1196783462, 1196783504, 1196783512, 1196783515] },
   'web': { title: 'Página Web', folder: 'Web', prefix: 'web_' },
   'publicidad': { title: 'Campaña Publicitaria', folder: 'Publicidad', prefix: 'campana_publicitaria' }
 };
@@ -1702,65 +1714,59 @@ function openGallery(type) {
   currentGallery = type;
   galleryImages[type] = [];
 
-  const isVideo = type === 'reels';
+  if (type === 'reels' && data.vimeoIds) {
+    data.vimeoIds.forEach(function(id) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;background:#000';
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://player.vimeo.com/video/${id}?byline=0&title=0&portrait=0&dnt=1`;
+      iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0';
+      wrap.appendChild(iframe);
+      grid.appendChild(wrap);
+      galleryImages[type].push(iframe);
+    });
+  } else {
+    let consecutiveFails = 0;
+    const maxConsecutiveFails = 3;
+    let idx = 1;
 
-  let consecutiveFails = 0;
-  const maxConsecutiveFails = 3;
-  let idx = 1;
-
-  function tryLoad() {
-    if (consecutiveFails >= maxConsecutiveFails) return;
-    const base = `Fotos/${data.folder}/${data.prefix}${idx}`;
-    const exts = isVideo ? ['mp4'] : ['jpg', 'png'];
-    tryExtensions(base, exts, 0);
-    idx++;
-  }
-
-  function tryExtensions(base, exts, extIdx) {
-    if (extIdx >= exts.length) {
-      consecutiveFails++;
-      tryLoad();
-      return;
+    function tryLoad() {
+      if (consecutiveFails >= maxConsecutiveFails) return;
+      const base = `Fotos/${data.folder}/${data.prefix}${idx}`;
+      tryExtensions(base, ['jpg', 'png'], 0);
+      idx++;
     }
-    const ext = exts[extIdx];
-    const el = isVideo ? document.createElement('video') : document.createElement('img');
-    el.src = `${base}.${ext}`;
-    el.alt = `${data.title} ${idx}`;
 
-    if (isVideo) {
-      el.controls = true;
-      el.muted = true;
-      el.playsinline = true;
-      el.preload = 'metadata';
-      el.style.cssText = 'height:220px;object-fit:cover;border-radius:8px;width:100%;cursor:pointer;background:#000';
-    } else {
+    function tryExtensions(base, exts, extIdx) {
+      if (extIdx >= exts.length) {
+        consecutiveFails++;
+        tryLoad();
+        return;
+      }
+      const ext = exts[extIdx];
+      const el = document.createElement('img');
+      el.src = `${base}.${ext}`;
+      el.alt = `${data.title} ${idx}`;
       el.addEventListener('click', function () {
         document.getElementById('imgFullscreenSrc').src = this.src;
         document.getElementById('imgFullscreen').classList.add('open');
       });
+      el.addEventListener('error', function () {
+        this.remove();
+        tryExtensions(base, exts, extIdx + 1);
+      });
+      el.addEventListener('load', function () {
+        consecutiveFails = 0;
+        grid.appendChild(el);
+        galleryImages[type].push(el);
+        tryLoad();
+      });
     }
 
-    el.addEventListener('error', function () {
-      this.remove();
-      tryExtensions(base, exts, extIdx + 1);
-    });
-
-    el.addEventListener('load', function () {
-      consecutiveFails = 0;
-      grid.appendChild(el);
-      galleryImages[type].push(el);
-      tryLoad();
-    });
-
-    el.addEventListener('loadeddata', function () {
-      consecutiveFails = 0;
-      grid.appendChild(el);
-      galleryImages[type].push(el);
-      tryLoad();
-    });
+    tryLoad();
   }
-
-  tryLoad();
 
   modal.style.display = 'block';
   document.body.style.overflow = 'hidden';
@@ -1780,7 +1786,7 @@ function navigateGallery(dir) {
   idx = (idx + dir + items.length) % items.length;
 
   const el = items[idx];
-  if (el.tagName === 'VIDEO') {
+  if (el.tagName !== 'IMG') {
     fullImg.src = '';
     fullscreen.classList.remove('open');
   } else {
