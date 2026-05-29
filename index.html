@@ -44,11 +44,28 @@
     cursor: pointer;
 }
 
+.modal-grid .vimeo-wrap {
+    width: 100%;
+    height: 220px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+}
+.modal-grid .vimeo-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
 @media (max-width: 600px) {
     .modal-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     .modal-grid img {
+        height: 150px;
+    }
+    .modal-grid .vimeo-wrap {
         height: 150px;
     }
 }
@@ -838,12 +855,25 @@
     nav { padding: 16px 24px; }
     .nav-links, .nav-cta { display: none; }
     .hamburger { display: flex; }
-    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
-    .hero-visual { display: none; }
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 110px 24px 50px;
+      min-height: auto;
+      gap: 30px;
+    }
+    .hero h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); }
+    .hero p { max-width: 100%; margin-bottom: 28px; }
+    .hero-visual { display: flex; }
+    #heroVideo { max-width: 100% !important; }
+    .hero-stats { position: static; display: inline-flex; gap: 12px; align-items: center; padding: 12px 20px; margin-top: 10px; }
+    .hero-stats-num { font-size: 1.6rem; }
+    .hero-stats-label { font-size: 0.6rem; }
     .services { padding: 80px 24px; }
     .services-grid { grid-template-columns: 1fr 1fr; }
     .why { grid-template-columns: 1fr; padding: 80px 24px; }
     .why-visual-inner { aspect-ratio: 16/9; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 40px; }
+    .section-title { font-size: 1.8rem; }
     .social-section { padding: 60px 24px; }
     .contact { grid-template-columns: 1fr; padding: 80px 24px; }
     .portfolio { padding: 80px 24px; }
@@ -860,8 +890,26 @@
     .footer-bottom-links { justify-content: center; }
   }
   @media (max-width: 600px) {
+    .hero { padding: 100px 16px 40px; gap: 24px; }
+    .hero h1 { font-size: clamp(1.8rem, 7vw, 2.5rem); margin-bottom: 16px; }
+    .hero p { font-size: 0.85rem; margin-bottom: 24px; }
+    .hero-tag { font-size: 0.6rem; margin-bottom: 16px; }
+    .hero-tag::before { width: 24px; }
+    .hero-btns { flex-direction: column; gap: 12px; }
+    .btn-primary, .btn-outline { width: 100%; justify-content: center; padding: 12px 24px; font-size: 0.72rem; }
+    #heroVideo { max-width: 100% !important; }
+    .hero .video-selector { flex-wrap: wrap; gap: 8px; }
+    .hero .video-btn { padding: 8px 16px; font-size: 0.7rem; flex: 1; min-width: 80px; }
+    .hero-stats { padding: 10px 16px; }
+    .hero-stats-num { font-size: 1.4rem; }
+    .services { padding: 60px 16px; }
     .services-grid { grid-template-columns: 1fr; }
+    .why { padding: 60px 16px; gap: 40px; }
+    .section-header { margin-bottom: 32px; }
+    .section-title { font-size: 1.5rem; }
+    .section-tag { font-size: 0.6rem; }
     .form-row { grid-template-columns: 1fr; }
+    .portfolio { padding: 60px 16px; }
     .portfolio-grid { grid-template-columns: 1fr; }
     .stats-bar-wrap { padding: 48px 16px; }
     .stats-bar { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -879,6 +927,15 @@
     .footer-col-title::after { left: 50%; transform: translateX(-50%); }
     .footer-col ul { align-items: center; }
     .footer-contact-item { justify-content: center; }
+  }
+  @media (max-width: 400px) {
+    .hero { padding: 90px 12px 32px; gap: 20px; }
+    .hero h1 { font-size: 1.5rem; }
+    .hero .video-btn { font-size: 0.65rem; padding: 6px 12px; min-width: 60px; }
+    #heroVideo { border-radius: 6px; }
+    .modal-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .modal-grid img, .modal-grid .vimeo-wrap { height: 120px; }
+    .portfolio-modal { padding: 8px; }
   }
 
   /* ──── WHATSAPP FLOAT ──── */
@@ -982,6 +1039,8 @@
     .modal-arrow { width: 36px; height: 36px; font-size: 1rem; }
     .modal-arrow.prev { left: 8px; }
     .modal-arrow.next { right: 8px; }
+    .portfolio-modal { padding: 12px; }
+    .close-modal { top: 8px; right: 16px; font-size: 32px; }
   }
 
 
@@ -1054,7 +1113,7 @@
       <button class="video-btn active" data-video="1196732639" onclick="cambiarVideo(this)">Video 1</button>
       <button class="video-btn" data-video="1196732638" onclick="cambiarVideo(this)">Video 2</button>
     </div>
-    <div class="hero-stats" style="position:static">
+    <div class="hero-stats">
       <div class="hero-stats-num">+200</div>
       <div class="hero-stats-label">Clientes atendidos</div>
     </div>
@@ -1714,15 +1773,14 @@ function openGallery(type) {
   currentGallery = type;
   galleryImages[type] = [];
 
-  if (type === 'reels' && data.vimeoIds) {
+    if (type === 'reels' && data.vimeoIds) {
     data.vimeoIds.forEach(function(id) {
       const wrap = document.createElement('div');
-      wrap.style.cssText = 'position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px;background:#000';
+      wrap.className = 'vimeo-wrap';
       const iframe = document.createElement('iframe');
       iframe.src = `https://player.vimeo.com/video/${id}?byline=0&title=0&portrait=0&dnt=1`;
       iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
       iframe.setAttribute('allowfullscreen', '');
-      iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0';
       wrap.appendChild(iframe);
       grid.appendChild(wrap);
       galleryImages[type].push(iframe);
