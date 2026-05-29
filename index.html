@@ -908,15 +908,13 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      gap: 16px;
-      padding: 4px 0 12px;
       scrollbar-width: none;
     }
     .process-grid::-webkit-scrollbar { display: none; }
     .process-step {
-      flex: 0 0 calc(100% - 32px);
-      scroll-snap-align: center;
-      padding: 36px 24px 32px;
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      padding: 40px 28px 36px;
     }
     .process-step p { max-width: 100%; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
