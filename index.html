@@ -260,15 +260,6 @@
   .hero-visual { display: flex; justify-content: center; align-items: center; position: relative; }
   #heroVideo iframe { width:100%;height:100%; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  .hero-stats {
-    position: absolute; bottom: -20px; left: -30px;
-    background: var(--green-dark); color: #fff;
-    padding: 20px 28px; border-radius: 4px;
-    box-shadow: 0 12px 40px rgba(10,10,10,0.18);
-  }
-  .hero-stats-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; line-height: 1; }
-  .hero-stats-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-top: 4px; }
   .video-btn {
     background: transparent; border: 1px solid var(--green-dark);
     color: #000; padding: 6px 18px; border-radius: 4px;
@@ -350,13 +341,6 @@
     position: relative; overflow: hidden; border-radius: 6px;
     aspect-ratio: 1/1;
   }
-  .why-accent {
-    position: absolute; top: 24px; right: 24px; z-index: 2;
-    background: var(--green); color: #fff; padding: 20px 24px; border-radius: 4px; text-align: center;
-    box-shadow: 0 8px 32px rgba(26,122,74,0.35);
-  }
-  .why-accent-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; line-height: 1; }
-  .why-accent-label { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.85; }
   .why-list { margin-top: 36px; display: flex; flex-direction: column; gap: 20px; }
   .why-item {
     display: flex; gap: 16px; align-items: flex-start;
@@ -384,7 +368,7 @@
   .portfolio-overlay {
     position: absolute; inset: 0;
     background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 55%);
-    opacity: 0; transition: opacity 0.3s; padding: 24px;
+    opacity: 0.7; transition: opacity 0.3s; padding: 24px;
     display: flex; flex-direction: column; justify-content: flex-end;
     pointer-events: none;
   }
@@ -865,9 +849,6 @@
     .hero p { max-width: 100%; margin-bottom: 28px; }
     .hero-visual { display: flex; }
     #heroVideo { max-width: 100% !important; }
-    .hero-stats { position: static; display: inline-flex; gap: 12px; align-items: center; padding: 12px 20px; margin-top: 10px; }
-    .hero-stats-num { font-size: 1.6rem; }
-    .hero-stats-label { font-size: 0.6rem; }
     .services { padding: 80px 24px; }
     .services-grid { grid-template-columns: 1fr 1fr; }
     .why { grid-template-columns: 1fr; padding: 80px 24px; }
@@ -900,8 +881,6 @@
     #heroVideo { max-width: 100% !important; }
     .hero .video-selector { flex-wrap: wrap; gap: 8px; }
     .hero .video-btn { padding: 8px 16px; font-size: 0.7rem; flex: 1; min-width: 80px; }
-    .hero-stats { padding: 10px 16px; }
-    .hero-stats-num { font-size: 1.4rem; }
     .services { padding: 60px 16px; }
     .services-grid { grid-template-columns: 1fr; }
     .why { padding: 60px 16px; gap: 40px; }
@@ -909,6 +888,14 @@
     .section-title { font-size: 1.5rem; }
     .section-tag { font-size: 0.6rem; }
     .form-row { grid-template-columns: 1fr; }
+    .contact { padding: 60px 16px; gap: 40px; }
+    .contact-info h2 { font-size: 1.8rem; }
+    .contact-info > p { font-size: 0.82rem; max-width: 100%; }
+    .contact-card { padding: 14px 16px; gap: 12px; }
+    .contact-card-value { font-size: 0.78rem; word-break: break-word; }
+    .contact-form { padding: 32px 20px; }
+    .contact-form h3 { font-size: 1.4rem; }
+    .form-group input, .form-group textarea, .form-group select { font-size: 0.8rem; padding: 11px 14px; }
     .portfolio { padding: 60px 16px; }
     .portfolio-grid { grid-template-columns: 1fr; }
     .stats-bar-wrap { padding: 48px 16px; }
@@ -918,15 +905,18 @@
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
     .process-grid { grid-template-columns: 1fr; gap: 32px; }
-    .process-step p { max-width: 280px; }
+    .process-step p { max-width: 100%; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
     .footer-brand-desc { max-width: 100%; text-align: center; }
     .footer-social-row { justify-content: center; }
     .footer-col-title { text-align: center; }
     .footer-col-title::after { left: 50%; transform: translateX(-50%); }
-    .footer-col ul { align-items: center; }
-    .footer-contact-item { justify-content: center; }
+    .footer-col ul { align-items: center; text-align: center; }
+    .footer-contact-item { justify-content: center; flex-wrap: wrap; }
+    .footer-contact-text { text-align: center; word-break: break-word; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 12px; }
+    .footer-bottom-links { justify-content: center; flex-wrap: wrap; gap: 16px; }
   }
   @media (max-width: 400px) {
     .hero { padding: 90px 12px 32px; gap: 20px; }
@@ -988,7 +978,7 @@
   .process {
     padding: 100px 60px;
     background: var(--black); color: var(--white);
-    position: relative; overflow: hidden;
+    position: relative;
   }
   .process::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0;
@@ -1113,10 +1103,6 @@
       <button class="video-btn active" data-video="1196732639" onclick="cambiarVideo(this)">Video 1</button>
       <button class="video-btn" data-video="1196732638" onclick="cambiarVideo(this)">Video 2</button>
     </div>
-    <div class="hero-stats">
-      <div class="hero-stats-num">+200</div>
-      <div class="hero-stats-label">Clientes atendidos</div>
-    </div>
   </div>
 </section>
 
@@ -1185,10 +1171,6 @@
   <div class="why-visual">
     <div class="why-visual-inner">
       <img src="Fotos/Sesion_fotos/sesion_foto10.jpg" alt="Sesión fotográfica profesional Creados">
-    </div>
-    <div class="why-accent">
-      <div class="why-accent-num">100%</div>
-      <div class="why-accent-label">Compromiso</div>
     </div>
   </div>
   <div>
