@@ -903,7 +903,21 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
-    .process-grid { grid-template-columns: 1fr; gap: 16px; }
+    .process-grid {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 16px;
+      padding: 4px 0 12px;
+      scrollbar-width: none;
+    }
+    .process-grid::-webkit-scrollbar { display: none; }
+    .process-step {
+      flex: 0 0 calc(100% - 32px);
+      scroll-snap-align: center;
+      padding: 36px 24px 32px;
+    }
     .process-step p { max-width: 100%; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
