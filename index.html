@@ -918,8 +918,9 @@
     .stat-item { padding: 20px 12px; }
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
-    .process { display: none; }
-    .process-mobile-testimonials { display: block; }
+    .process { padding: 60px 16px; }
+    .process-grid, .process-arrow, .process-dots { display: none; }
+    .process-wrap { overflow: hidden; width: 100%; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
     .footer-brand-desc { max-width: 100%; text-align: center; }
@@ -1034,40 +1035,31 @@
 
   .process-arrow, .process-dots { display: none; }
 
-  .process-mobile-testimonials { display: none; background: var(--black); color: var(--white); padding: 60px 20px; }
-  @media (min-width: 601px) {
-    .process-mobile-testimonials { display: none !important; }
+  .process-marquee { display: none; }
+  @media (max-width: 600px) {
+    .process-marquee {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: processMarquee 35s linear infinite;
+      padding: 8px 0;
+    }
+    .process-marquee:hover { animation-play-state: paused; }
+    .process-marquee .process-step {
+      width: 260px;
+      flex-shrink: 0;
+      min-height: auto;
+      text-align: center;
+      padding: 28px 20px 24px;
+    }
+    .process-marquee .process-step h4 { text-align: center; }
+    .process-marquee .process-step p { font-size: 0.78rem; }
+    .process-marquee .process-step-num { margin: 0 auto 12px; }
+    @keyframes processMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
   }
-  .process-mobile-testimonials-track {
-    display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch; padding: 0 20px 16px;
-    scrollbar-width: none;
-  }
-  .process-mobile-testimonials-track::-webkit-scrollbar { display: none; }
-  .process-mobile-testimonial-card {
-    flex: 0 0 85%; scroll-snap-align: center;
-    background: #111; border: 1px solid #1a1a1a; border-radius: 10px;
-    padding: 28px 24px; min-height: 200px;
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .process-mobile-testimonial-card .testimonial-stars { color: #f5b342; font-size: 0.85rem; margin-bottom: 12px; letter-spacing: 2px; }
-  .process-mobile-testimonial-card .testimonial-text { font-size: 0.85rem; color: #bbb; line-height: 1.7; font-weight: 300; font-style: italic; }
-  .process-mobile-testimonial-card .testimonial-author { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
-  .process-mobile-testimonial-card .testimonial-avatar {
-    width: 36px; height: 36px; border-radius: 50%; background: var(--green);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; flex-shrink: 0;
-  }
-  .process-mobile-testimonial-card .testimonial-name { font-size: 0.78rem; color: #fff; font-weight: 600; }
-  .process-mobile-testimonial-card .testimonial-role { font-size: 0.62rem; color: #666; letter-spacing: 1px; text-transform: uppercase; }
-  .process-mobile-testimonials-dots {
-    display: flex; justify-content: center; gap: 10px; margin-top: 20px;
-  }
-  .process-mobile-testimonials-dot {
-    width: 10px; height: 10px; border-radius: 50%; background: #444;
-    border: none; cursor: pointer; padding: 0; transition: background 0.3s;
-  }
-  .process-mobile-testimonials-dot.active { background: var(--green); }
 
   /* ──── GALLERY ARROWS ──── */
   .modal-arrow {
@@ -1533,67 +1525,62 @@
           <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
         </div>
       </div>
+      <!-- MARQUEE en móvil (duplicado para efecto infinito) -->
+      <div class="process-marquee" id="processMarquee">
+        <div class="process-step">
+          <div class="process-step-num">1</div>
+          <span class="process-step-icon">📋</span>
+          <h4>Briefing</h4>
+          <p>Conversamos sobre tu marca, objetivos y estilo para definir la estrategia perfecta.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">2</div>
+          <span class="process-step-icon">📷</span>
+          <h4>Producción</h4>
+          <p>Planificamos y ejecutamos la sesión fotográfica o grabación con equipo profesional.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">3</div>
+          <span class="process-step-icon">💡</span>
+          <h4>Edición</h4>
+          <p>Corregimos color, retocamos detalles y aplicamos el estilo visual de tu marca.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">4</div>
+          <span class="process-step-icon">🏆</span>
+          <h4>Entrega</h4>
+          <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
+        </div>
+        <!-- DUPLICATE FOR MARQUEE -->
+        <div class="process-step">
+          <div class="process-step-num">1</div>
+          <span class="process-step-icon">📋</span>
+          <h4>Briefing</h4>
+          <p>Conversamos sobre tu marca, objetivos y estilo para definir la estrategia perfecta.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">2</div>
+          <span class="process-step-icon">📷</span>
+          <h4>Producción</h4>
+          <p>Planificamos y ejecutamos la sesión fotográfica o grabación con equipo profesional.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">3</div>
+          <span class="process-step-icon">💡</span>
+          <h4>Edición</h4>
+          <p>Corregimos color, retocamos detalles y aplicamos el estilo visual de tu marca.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">4</div>
+          <span class="process-step-icon">🏆</span>
+          <h4>Entrega</h4>
+          <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
+        </div>
+      </div>
       <button class="process-arrow prev" aria-label="Anterior">‹</button>
       <button class="process-arrow next" aria-label="Siguiente">›</button>
     </div>
     <div class="process-dots"></div>
-  </div>
-</section>
-
-<!-- MOBILE TESTIMONIALS (solo en móvil reemplaza al proceso) -->
-<section class="process-mobile-testimonials">
-  <div class="process-inner reveal from-bottom">
-    <div class="process-header">
-      <div class="section-tag" style="justify-content:center;">Testimonios</div>
-      <h2 class="section-title">Lo que dicen <em>nuestros clientes</em></h2>
-    </div>
-    <div class="process-mobile-testimonials-track" id="mobileTestimonialsTrack">
-      <div class="process-mobile-testimonial-card">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"Transformaron completamente nuestra presencia digital. Las fotos y videos superaron nuestras expectativas."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">MC</div>
-          <div>
-            <div class="testimonial-name">María C.</div>
-            <div class="testimonial-role">Emprendedora</div>
-          </div>
-        </div>
-      </div>
-      <div class="process-mobile-testimonial-card">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"El equipo entendió nuestra visión desde el primer día. La estrategia de contenido nos dio resultados en semanas."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">PL</div>
-          <div>
-            <div class="testimonial-name">Pedro L.</div>
-            <div class="testimonial-role">Restaurante</div>
-          </div>
-        </div>
-      </div>
-      <div class="process-mobile-testimonial-card">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"Profesionalismo y creatividad excepcional. Nuestras redes sociales nunca habían lucido tan bien."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">AG</div>
-          <div>
-            <div class="testimonial-name">Ana G.</div>
-            <div class="testimonial-role">Tienda online</div>
-          </div>
-        </div>
-      </div>
-      <div class="process-mobile-testimonial-card">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"La página web que nos diseñaron es espectacular. Rápida, moderna y convierte visitantes en clientes."</p>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">CR</div>
-          <div>
-            <div class="testimonial-name">Carlos R.</div>
-            <div class="testimonial-role">Consultor</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="process-mobile-testimonials-dots" id="mobileTestimonialsDots"></div>
   </div>
 </section>
 
@@ -2166,39 +2153,7 @@ document.addEventListener('keydown', function(event) {
   window.addEventListener('resize', () => { w = wrap.clientWidth; go(cur, false); });
 })();
 
-/* ──── MOBILE TESTIMONIALS DOTS ──── */
-(function(){
-  const track = document.getElementById('mobileTestimonialsTrack');
-  const dots = document.getElementById('mobileTestimonialsDots');
-  if (!track || !dots) return;
-  const cards = [...track.children];
-  if (cards.length < 2) return;
-  dots.innerHTML = '';
-  cards.forEach((_, i) => {
-    const d = document.createElement('button');
-    d.className = 'process-mobile-testimonials-dot' + (i === 0 ? ' active' : '');
-    d.addEventListener('click', () => {
-      track.scrollTo({ left: cards[i].offsetLeft - track.offsetLeft, behavior: 'smooth' });
-    });
-    dots.appendChild(d);
-  });
-  let ticking = false;
-  track.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        const cx = track.scrollLeft + track.clientWidth / 2;
-        let best = 0, bestDist = Infinity;
-        cards.forEach((c, i) => {
-          const dist = Math.abs(c.offsetLeft - cx);
-          if (dist < bestDist) { bestDist = dist; best = i; }
-        });
-        [...dots.children].forEach((d, i) => d.classList.toggle('active', i === best));
-        ticking = false;
-      });
-      ticking = true;
-    }
-  });
-})();
+
 
 /* ──── PRELOADER ──── */
 (function(){
