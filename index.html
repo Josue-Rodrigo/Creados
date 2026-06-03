@@ -918,7 +918,25 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
-    .process-wrap { overflow: hidden; width: 100%; }
+    .process-wrap { overflow: hidden; width: 100%; position: relative; }
+    .process-mobile-arrow {
+      display: flex;
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      z-index: 2;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(17,17,17,0.85);
+      border: 1px solid #444;
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .process-mobile-arrow:active { background: var(--green); border-color: var(--green); }
+    .process-mobile-arrow.prev { left: 6px; }
+    .process-mobile-arrow.next { right: 6px; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
     .footer-brand-desc { max-width: 100%; text-align: center; }
@@ -1025,6 +1043,8 @@
     font-size: 0.78rem; line-height: 1.6; color: #888; font-weight: 300;
     max-width: 100%; margin: 0;
   }
+
+  .process-mobile-arrow { display: none; }
 
   .process-marquee {
     display: flex;
@@ -1539,6 +1559,8 @@
           <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
         </div>
       </div>
+      <button class="process-mobile-arrow prev" aria-label="Anterior">‹</button>
+      <button class="process-mobile-arrow next" aria-label="Siguiente">›</button>
     </div>
   </div>
 </section>
@@ -2044,6 +2066,81 @@ document.addEventListener('keydown', function(event) {
 })();
 
 
+
+/* ──── PROCESS MARQUEE CONTROLS (mobile) ──── */
+(function(){
+  const wrap = document.querySelector('.process-wrap');
+  const track = document.getElementById('processMarquee');
+  if (!wrap || !track) return;
+  const isMobile = () => window.innerWidth <= 600;
+
+  let pos = 0, gap = 24, animId = null, running = false, jumping = false;
+  let cardW = 0, halfW = 0;
+  const speed = 0.6;
+
+  function measure() {
+    const first = track.querySelector('.process-step');
+    if (!first) { cardW = 344; halfW = 1376; return; }
+    cardW = first.getBoundingClientRect().width + gap;
+    halfW = (track.children.length / 2) * cardW;
+  }
+
+  function animate() {
+    if (!running) return;
+    pos += speed;
+    if (pos >= halfW) pos = 0;
+    track.style.transform = `translateX(-${pos}px)`;
+    animId = requestAnimationFrame(animate);
+  }
+
+  function start() {
+    if (!isMobile()) { stop(); return; }
+    if (running) return;
+    measure();
+    running = true;
+    track.style.transition = 'none';
+    track.style.animation = 'none';
+    track.style.transform = `translateX(-${pos}px)`;
+    animate();
+  }
+
+  function stop() {
+    running = false; jumping = false;
+    if (animId) cancelAnimationFrame(animId);
+    track.style.animation = '';
+    track.style.transform = '';
+    pos = 0;
+  }
+
+  function jump(dir) {
+    if (!running || jumping) return;
+    jumping = true; running = false;
+    if (animId) cancelAnimationFrame(animId);
+    measure();
+    pos += dir * cardW;
+    if (pos < 0) pos = halfW - cardW;
+    if (pos >= halfW) pos = 0;
+    track.style.transition = 'transform 0.35s ease';
+    track.style.transform = `translateX(-${pos}px)`;
+    setTimeout(() => {
+      track.style.transition = 'none';
+      jumping = false; running = true;
+      animate();
+    }, 360);
+  }
+
+  const prevBtn = document.querySelector('.process-mobile-arrow.prev');
+  const nextBtn = document.querySelector('.process-mobile-arrow.next');
+  if (prevBtn && nextBtn) {
+    prevBtn.addEventListener('click', () => jump(-1));
+    nextBtn.addEventListener('click', () => jump(1));
+  }
+
+  start();
+  window.addEventListener('resize', () => {
+    if (isMobile()) start(); else stop();
+  });
+})();
 
 /* ──── PRELOADER ──── */
 (function(){
