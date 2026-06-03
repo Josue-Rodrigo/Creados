@@ -880,7 +880,6 @@
     .stat-item { padding: 24px 16px; }
     .testimonials { padding: 50px 0; }
     .process { padding: 80px 24px; }
-    .process-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
     .footer-main { padding: 48px 24px 32px; grid-template-columns: 1fr 1fr; }
     .footer-bottom { padding: 20px 24px; flex-direction: column; text-align: center; }
     .footer-bottom-links { justify-content: center; }
@@ -919,7 +918,6 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
-    .process-grid, .process-arrow, .process-dots { display: none; }
     .process-wrap { overflow: hidden; width: 100%; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
@@ -995,12 +993,7 @@
   }
   .process-inner { max-width: 1100px; margin: 0 auto; }
   .process-header { text-align: center; margin-bottom: 48px; }
-  .process-wrap { position: relative; }
-  .process-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  }
+  .process-wrap { position: relative; overflow: hidden; }
   .process-step {
     text-align: center;
     padding: 32px 20px 28px;
@@ -1033,32 +1026,27 @@
     max-width: 100%; margin: 0;
   }
 
-  .process-arrow, .process-dots { display: none; }
-
-  .process-marquee { display: none; }
-  @media (max-width: 600px) {
-    .process-marquee {
-      display: flex;
-      gap: 20px;
-      width: max-content;
-      animation: processMarquee 35s linear infinite;
-      padding: 8px 0;
-    }
-    .process-marquee:hover { animation-play-state: paused; }
-    .process-marquee .process-step {
-      width: 260px;
-      flex-shrink: 0;
-      min-height: auto;
-      text-align: center;
-      padding: 28px 20px 24px;
-    }
-    .process-marquee .process-step h4 { text-align: center; }
-    .process-marquee .process-step p { font-size: 0.78rem; }
-    .process-marquee .process-step-num { margin: 0 auto 12px; }
-    @keyframes processMarquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
+  .process-marquee {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    animation: processMarquee 40s linear infinite;
+    padding: 12px 0;
+  }
+  .process-marquee:hover { animation-play-state: paused; }
+  .process-marquee .process-step {
+    width: 320px;
+    flex-shrink: 0;
+    min-height: 260px;
+    text-align: center;
+    padding: 36px 28px 32px;
+  }
+  .process-marquee .process-step h4 { text-align: center; font-size: 1.2rem; }
+  .process-marquee .process-step p { font-size: 0.85rem; }
+  .process-marquee .process-step-num { margin: 0 auto 14px; }
+  @keyframes processMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
   }
 
   /* ──── GALLERY ARROWS ──── */
@@ -1499,33 +1487,7 @@
       <h2 class="section-title">De la idea al <em>resultado</em></h2>
     </div>
     <div class="process-wrap">
-      <div class="process-grid" id="processTrack">
-        <div class="process-step">
-          <div class="process-step-num">1</div>
-          <span class="process-step-icon">📋</span>
-          <h4>Briefing</h4>
-          <p>Conversamos sobre tu marca, objetivos y estilo para definir la estrategia perfecta.</p>
-        </div>
-        <div class="process-step">
-          <div class="process-step-num">2</div>
-          <span class="process-step-icon">📷</span>
-          <h4>Producción</h4>
-          <p>Planificamos y ejecutamos la sesión fotográfica o grabación con equipo profesional.</p>
-        </div>
-        <div class="process-step">
-          <div class="process-step-num">3</div>
-          <span class="process-step-icon">💡</span>
-          <h4>Edición</h4>
-          <p>Corregimos color, retocamos detalles y aplicamos el estilo visual de tu marca.</p>
-        </div>
-        <div class="process-step">
-          <div class="process-step-num">4</div>
-          <span class="process-step-icon">🏆</span>
-          <h4>Entrega</h4>
-          <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
-        </div>
-      </div>
-      <!-- MARQUEE en móvil (duplicado para efecto infinito) -->
+      <!-- MARQUEE infinito -->
       <div class="process-marquee" id="processMarquee">
         <div class="process-step">
           <div class="process-step-num">1</div>
@@ -1577,10 +1539,7 @@
           <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
         </div>
       </div>
-      <button class="process-arrow prev" aria-label="Anterior">‹</button>
-      <button class="process-arrow next" aria-label="Siguiente">›</button>
     </div>
-    <div class="process-dots"></div>
   </div>
 </section>
 
@@ -2082,75 +2041,6 @@ document.addEventListener('keydown', function(event) {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-})();
-
-/* ──── PROCESS CAROUSEL (mobile) ──── */
-(function(){
-  if (window.innerWidth > 600) return;
-  const wrap = document.querySelector('.process-wrap');
-  const track = document.getElementById('processTrack');
-  if (!wrap || !track) return;
-  const steps = [...track.children];
-  if (steps.length < 2) return;
-  let cur = 0, sx = 0, sy = 0, drag = false;
-
-  const dots = document.querySelector('.process-dots');
-  const pBtn = document.querySelector('.process-arrow.prev');
-  const nBtn = document.querySelector('.process-arrow.next');
-
-  let w = wrap.clientWidth;
-
-  function go(i, anim){
-    if (i < 0) i = steps.length - 1;
-    if (i >= steps.length) i = 0;
-    cur = i;
-    track.style.transition = anim ? 'transform 0.35s ease' : 'none';
-    track.style.transform = `translateX(-${cur * w}px)`;
-    steps.forEach((s, j) => s.classList.toggle('active', j === cur));
-    if (!dots) return;
-    [...dots.children].forEach((d, j) => d.classList.toggle('active', j === cur));
-  }
-
-  if (dots){
-    dots.innerHTML = '';
-    steps.forEach((_, i) => {
-      const d = document.createElement('button');
-      d.className = 'process-dot' + (i === 0 ? ' active' : '');
-      d.addEventListener('click', () => go(i, true));
-      dots.appendChild(d);
-    });
-  }
-
-  pBtn?.addEventListener('click', () => go(cur - 1, true));
-  nBtn?.addEventListener('click', () => go(cur + 1, true));
-
-  track.addEventListener('touchstart', e => {
-    sx = e.touches[0].clientX;
-    sy = e.touches[0].clientY;
-    drag = false;
-  }, { passive: true });
-
-  track.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - sx;
-    const dy = e.touches[0].clientY - sy;
-    if (!drag){
-      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) drag = true;
-      else return;
-    }
-    e.preventDefault();
-    track.style.transition = 'none';
-    track.style.transform = `translateX(${-cur * w + dx}px)`;
-  }, { passive: false });
-
-  track.addEventListener('touchend', e => {
-    if (!drag) return;
-    const dx = e.changedTouches[0].clientX - sx;
-    go(Math.abs(dx) > w * 0.18 ? (dx < 0 ? cur + 1 : cur - 1) : cur, true);
-    drag = false;
-  }, { passive: true });
-
-  go(0, false);
-  window.addEventListener('resize', () => { w = wrap.clientWidth; go(cur, false); });
 })();
 
 
