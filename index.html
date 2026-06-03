@@ -919,30 +919,30 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
-    .process-carousel { position: relative; }
+    .process-carousel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
     .process-grid {
       display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      scroll-behavior: smooth;
-      border-radius: 12px;
       gap: 0;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
     }
-    .process-grid::-webkit-scrollbar { display: none; }
     .process-step {
       flex: 0 0 100%;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      padding: 44px 32px;
-      transition: transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+      min-width: 100%;
+      width: 100%;
+      padding: 48px 36px;
       border-color: #1a1a1a;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 280px;
+      min-height: 300px;
+      border-width: 1.5px;
+      box-sizing: border-box;
     }
     .process-step.active {
       border-color: var(--green);
@@ -2079,59 +2079,109 @@ document.addEventListener('keydown', function(event) {
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 })();
 
-/* ──── PROCESS CAROUSEL (mobile) ──── */
+/* ──── PROCESS CAROUSEL (mobile slider) ──── */
 (function(){
-  const grid = document.querySelector('.process-grid');
-  if (!grid) return;
-  const steps = grid.querySelectorAll('.process-step');
+  if (window.innerWidth > 600) return;
+  const track = document.querySelector('.process-grid');
+  if (!track) return;
+  const steps = track.querySelectorAll('.process-step');
   if (steps.length < 2) return;
   const dots = document.querySelector('.process-dots');
-  const prev = document.querySelector('.process-arrow.prev');
-  const next = document.querySelector('.process-arrow.next');
+  const prevBtn = document.querySelector('.process-arrow.prev');
+  const nextBtn = document.querySelector('.process-arrow.next');
   let current = 0;
+  let startX = 0, startY = 0;
+  let isDragging = false;
+  let dragOffset = 0;
 
-  function update(){
-    steps.forEach((s, i) => s.classList.toggle('active', i === current));
-    if (!dots) return;
-    const btns = dots.querySelectorAll('.process-dot');
-    btns.forEach((b, i) => b.classList.toggle('active', i === current));
+  function getWidth() {
+    return track.parentElement.clientWidth;
   }
 
-  function goTo(idx){
+  function slideTo(idx, animate) {
     if (idx < 0) idx = steps.length - 1;
     if (idx >= steps.length) idx = 0;
     current = idx;
-    steps[current].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-    update();
+    const w = getWidth();
+    if (!animate) track.style.transition = 'none';
+    else track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    track.style.transform = `translateX(-${current * w}px)`;
+    steps.forEach((s, i) => s.classList.toggle('active', i === current));
+    if (dots) {
+      const btns = dots.querySelectorAll('.process-dot');
+      btns.forEach((b, i) => b.classList.toggle('active', i === current));
+    }
   }
 
+  function setWidths() {
+    const w = getWidth();
+    steps.forEach(s => {
+      s.style.flex = `0 0 ${w}px`;
+      s.style.minWidth = `${w}px`;
+    });
+    track.style.transition = 'none';
+    track.style.transform = `translateX(-${current * w}px)`;
+  }
+
+  // Create dots
   if (dots) {
     dots.innerHTML = '';
     steps.forEach((_, i) => {
       const dot = document.createElement('button');
       dot.className = 'process-dot' + (i === 0 ? ' active' : '');
       dot.setAttribute('aria-label', `Paso ${i + 1}`);
-      dot.addEventListener('click', () => goTo(i));
+      dot.addEventListener('click', () => slideTo(i, true));
       dots.appendChild(dot);
     });
   }
 
-  prev?.addEventListener('click', () => goTo(current - 1));
-  next?.addEventListener('click', () => goTo(current + 1));
+  prevBtn?.addEventListener('click', () => slideTo(current - 1, true));
+  nextBtn?.addEventListener('click', () => slideTo(current + 1, true));
 
-  let ticking = false;
-  grid.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        const idx = Math.round(grid.scrollLeft / grid.offsetWidth);
-        if (idx !== current) { current = Math.min(idx, steps.length - 1); update(); }
-        ticking = false;
-      });
-      ticking = true;
+  // Touch events
+  track.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isDragging = false;
+    dragOffset = 0;
+  }, { passive: true });
+
+  track.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (!isDragging) {
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) isDragging = true;
+      else return;
     }
-  });
+    e.preventDefault();
+    dragOffset = dx;
+    const w = getWidth();
+    track.style.transition = 'none';
+    track.style.transform = `translateX(${-current * w + dx}px)`;
+  }, { passive: false });
 
-  update();
+  track.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const w = getWidth();
+    if (Math.abs(dx) > w * 0.18) {
+      slideTo(dx < 0 ? current + 1 : current - 1, true);
+    } else {
+      slideTo(current, true);
+    }
+    isDragging = false;
+  }, { passive: true });
+
+  track.addEventListener('touchcancel', () => {
+    if (!isDragging) return;
+    slideTo(current, true);
+    isDragging = false;
+  }, { passive: true });
+
+  // Init
+  setWidths();
+  slideTo(0, false);
+  window.addEventListener('resize', setWidths);
 })();
 
 /* ──── PRELOADER ──── */
