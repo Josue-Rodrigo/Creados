@@ -918,8 +918,7 @@
     .stat-item { padding: 20px 12px; }
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
-    .process { padding: 60px 0; }
-    .process-header { padding: 0 16px; }
+    .process { padding: 60px 16px; }
     .process-grid { display: flex; gap: 0; width: 100%; margin: 0; padding: 0; }
     .process-wrap { overflow: hidden; width: 100%; }
     .process-step {
@@ -928,15 +927,15 @@
       min-width: 100%;
       max-width: 100%;
       box-sizing: border-box;
-      min-height: 260px;
-      padding: 48px 32px;
+      min-height: 220px;
+      padding: 40px 28px;
       text-align: left;
     }
     .process-step.active {
       border-color: var(--green);
       box-shadow: 0 0 24px rgba(26,122,74,0.15);
     }
-    .process-step p { max-width: 100%; font-size: 0.85rem; line-height: 1.7; }
+    .process-step p { font-size: 0.85rem; line-height: 1.7; }
     .process-step-num { margin: 0 0 12px; }
     .process-step h4 { text-align: left; }
     .process-arrow {
@@ -955,14 +954,13 @@
       justify-content: center;
     }
     .process-arrow:active { background: var(--green); border-color: var(--green); }
-    .process-arrow.prev { left: 8px; }
-    .process-arrow.next { right: 8px; }
+    .process-arrow.prev { left: 6px; }
+    .process-arrow.next { right: 6px; }
     .process-dots {
       display: flex;
       justify-content: center;
       gap: 10px;
       margin-top: 20px;
-      padding: 0 16px;
     }
     .process-dot {
       width: 10px; height: 10px;
