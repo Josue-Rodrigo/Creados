@@ -919,8 +919,8 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
-    .process-grid { display: flex; gap: 0; }
-    .process-wrap { overflow: hidden; border-radius: 12px; }
+    .process-grid { display: flex; gap: 0; width: 100%; margin: 0; padding: 0; }
+    .process-wrap { overflow: hidden; border-radius: 12px; width: 100%; }
     .process-step {
       flex: 0 0 100%;
       width: 100%;
@@ -2067,11 +2067,12 @@ document.addEventListener('keydown', function(event) {
   const pBtn = document.querySelector('.process-arrow.prev');
   const nBtn = document.querySelector('.process-arrow.next');
 
+  let w = wrap.clientWidth;
+
   function go(i, anim){
     if (i < 0) i = steps.length - 1;
     if (i >= steps.length) i = 0;
     cur = i;
-    const w = track.clientWidth;
     track.style.transition = anim ? 'transform 0.35s ease' : 'none';
     track.style.transform = `translateX(-${cur * w}px)`;
     steps.forEach((s, j) => s.classList.toggle('active', j === cur));
@@ -2107,18 +2108,18 @@ document.addEventListener('keydown', function(event) {
     }
     e.preventDefault();
     track.style.transition = 'none';
-    track.style.transform = `translateX(${-cur * track.clientWidth + dx}px)`;
+    track.style.transform = `translateX(${-cur * w + dx}px)`;
   }, { passive: false });
 
   track.addEventListener('touchend', e => {
     if (!drag) return;
     const dx = e.changedTouches[0].clientX - sx;
-    go(Math.abs(dx) > track.clientWidth * 0.18 ? (dx < 0 ? cur + 1 : cur - 1) : cur, true);
+    go(Math.abs(dx) > w * 0.18 ? (dx < 0 ? cur + 1 : cur - 1) : cur, true);
     drag = false;
   }, { passive: true });
 
   go(0, false);
-  window.addEventListener('resize', () => go(cur, false));
+  window.addEventListener('resize', () => { w = wrap.clientWidth; go(cur, false); });
 })();
 
 /* ──── PRELOADER ──── */
