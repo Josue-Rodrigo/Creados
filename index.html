@@ -919,20 +919,76 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
+    .process-carousel { position: relative; }
     .process-grid {
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
+      scroll-behavior: smooth;
+      border-radius: 12px;
     }
     .process-grid::-webkit-scrollbar { display: none; }
     .process-step {
       flex: 0 0 100%;
       scroll-snap-align: start;
       padding: 40px 28px 36px;
+      transition: transform 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+      border-color: #1a1a1a;
+    }
+    .process-step.active {
+      border-color: var(--green);
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(26,122,74,0.15);
     }
     .process-step p { max-width: 100%; }
+    .process-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .process-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      border: none;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      padding: 0;
+    }
+    .process-dot.active {
+      background: var(--green);
+      box-shadow: 0 0 14px rgba(26,122,74,0.5);
+      transform: scale(1.35);
+    }
+    .process-arrow {
+      display: flex;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(17,17,17,0.92);
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    .process-arrow:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .process-arrow.prev { left: 6px; }
+    .process-arrow.next { right: 6px; }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
     .footer-brand-desc { max-width: 100%; text-align: center; }
@@ -971,7 +1027,7 @@
   }
   .wa-float-btn svg { width: 28px; height: 28px; fill: #fff; }
 
-  /* ──── PRELOADER ──── */
+/* ──── PRELOADER ──── */
   .preloader {
     position: fixed; inset: 0; z-index: 100000;
     background: #080808;
@@ -1043,6 +1099,8 @@
     font-size: 0.78rem; line-height: 1.6; color: #888; font-weight: 300;
     max-width: 100%; margin: 0;
   }
+
+  .process-arrow, .process-dots { display: none; }
 
   /* ──── GALLERY ARROWS ──── */
   .modal-arrow {
@@ -1481,31 +1539,36 @@
       <div class="section-tag" style="justify-content:center;">Cómo trabajamos</div>
       <h2 class="section-title">De la idea al <em>resultado</em></h2>
     </div>
-    <div class="process-grid">
-      <div class="process-step">
-        <div class="process-step-num">1</div>
-        <span class="process-step-icon">📋</span>
-        <h4>Briefing</h4>
-        <p>Conversamos sobre tu marca, objetivos y estilo para definir la estrategia perfecta.</p>
+    <div class="process-carousel">
+      <button class="process-arrow prev" aria-label="Anterior">‹</button>
+      <div class="process-grid">
+        <div class="process-step">
+          <div class="process-step-num">1</div>
+          <span class="process-step-icon">📋</span>
+          <h4>Briefing</h4>
+          <p>Conversamos sobre tu marca, objetivos y estilo para definir la estrategia perfecta.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">2</div>
+          <span class="process-step-icon">📷</span>
+          <h4>Producción</h4>
+          <p>Planificamos y ejecutamos la sesión fotográfica o grabación con equipo profesional.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">3</div>
+          <span class="process-step-icon">💡</span>
+          <h4>Edición</h4>
+          <p>Corregimos color, retocamos detalles y aplicamos el estilo visual de tu marca.</p>
+        </div>
+        <div class="process-step">
+          <div class="process-step-num">4</div>
+          <span class="process-step-icon">🏆</span>
+          <h4>Entrega</h4>
+          <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
+        </div>
       </div>
-      <div class="process-step">
-        <div class="process-step-num">2</div>
-        <span class="process-step-icon">📷</span>
-        <h4>Producción</h4>
-        <p>Planificamos y ejecutamos la sesión fotográfica o grabación con equipo profesional.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-step-num">3</div>
-        <span class="process-step-icon">💡</span>
-        <h4>Edición</h4>
-        <p>Corregimos color, retocamos detalles y aplicamos el estilo visual de tu marca.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-step-num">4</div>
-        <span class="process-step-icon">🏆</span>
-        <h4>Entrega</h4>
-        <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
-      </div>
+      <button class="process-arrow next" aria-label="Siguiente">›</button>
+      <div class="process-dots"></div>
     </div>
   </div>
 </section>
@@ -2008,6 +2071,61 @@ document.addEventListener('keydown', function(event) {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+
+/* ──── PROCESS CAROUSEL (mobile) ──── */
+(function(){
+  const grid = document.querySelector('.process-grid');
+  if (!grid) return;
+  const steps = grid.querySelectorAll('.process-step');
+  if (steps.length < 2) return;
+  const dots = document.querySelector('.process-dots');
+  const prev = document.querySelector('.process-arrow.prev');
+  const next = document.querySelector('.process-arrow.next');
+  let current = 0;
+
+  function update(){
+    steps.forEach((s, i) => s.classList.toggle('active', i === current));
+    if (!dots) return;
+    const btns = dots.querySelectorAll('.process-dot');
+    btns.forEach((b, i) => b.classList.toggle('active', i === current));
+  }
+
+  function goTo(idx){
+    if (idx < 0) idx = steps.length - 1;
+    if (idx >= steps.length) idx = 0;
+    current = idx;
+    steps[current].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    update();
+  }
+
+  if (dots) {
+    dots.innerHTML = '';
+    steps.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'process-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Paso ${i + 1}`);
+      dot.addEventListener('click', () => goTo(i));
+      dots.appendChild(dot);
+    });
+  }
+
+  prev?.addEventListener('click', () => goTo(current - 1));
+  next?.addEventListener('click', () => goTo(current + 1));
+
+  let ticking = false;
+  grid.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const idx = Math.round(grid.scrollLeft / grid.offsetWidth);
+        if (idx !== current) { current = Math.min(idx, steps.length - 1); update(); }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  update();
 })();
 
 /* ──── PRELOADER ──── */
