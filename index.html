@@ -919,81 +919,51 @@
     .stat-num { font-size: 2rem; }
     .stat-icon { font-size: 1.3rem; }
     .process { padding: 60px 16px; }
-    .process-carousel {
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-    }
-    .process-grid {
-      display: flex;
-      gap: 0;
-      width: 100%;
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
+    .process-grid { display: flex; gap: 0; }
+    .process-wrap { overflow: hidden; border-radius: 12px; }
     .process-step {
       flex: 0 0 100%;
-      min-width: 100%;
-      width: 100%;
-      padding: 48px 36px;
-      border: 1.5px solid #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
-      box-sizing: border-box;
+      min-height: 260px;
+      padding: 40px 28px;
     }
     .process-step.active {
       border-color: var(--green);
-      box-shadow: 0 0 30px rgba(26,122,74,0.15);
+      box-shadow: 0 0 24px rgba(26,122,74,0.15);
     }
     .process-step p { max-width: 100%; }
+    .process-arrow {
+      display: flex;
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      z-index: 2;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(17,17,17,0.9);
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .process-arrow:active { border-color: var(--green); color: var(--green); }
+    .process-arrow.prev { left: 6px; }
+    .process-arrow.next { right: 6px; }
     .process-dots {
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-top: 24px;
+      margin-top: 20px;
     }
     .process-dot {
-      width: 10px;
-      height: 10px;
+      width: 10px; height: 10px;
       border-radius: 50%;
-      background: #2a2a2a;
+      background: #333;
       border: none;
       cursor: pointer;
-      transition: all 0.4s ease;
       padding: 0;
     }
-    .process-dot.active {
-      background: var(--green);
-      box-shadow: 0 0 14px rgba(26,122,74,0.5);
-      transform: scale(1.35);
-    }
-    .process-arrow {
-      display: flex;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 3;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(17,17,17,0.92);
-      border: 1px solid #333;
-      color: #fff;
-      font-size: 1.4rem;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(4px);
-    }
-    .process-arrow:hover {
-      border-color: var(--green);
-      color: var(--green);
-    }
-    .process-arrow.prev { left: 6px; }
-    .process-arrow.next { right: 6px; }
+    .process-dot.active { background: var(--green); }
     .footer-main { grid-template-columns: 1fr; gap: 32px; }
     .footer-brand .footer-logo { justify-content: center; }
     .footer-brand-desc { max-width: 100%; text-align: center; }
@@ -1068,6 +1038,7 @@
   }
   .process-inner { max-width: 1100px; margin: 0 auto; }
   .process-header { text-align: center; margin-bottom: 48px; }
+  .process-wrap { position: relative; }
   .process-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1544,9 +1515,8 @@
       <div class="section-tag" style="justify-content:center;">Cómo trabajamos</div>
       <h2 class="section-title">De la idea al <em>resultado</em></h2>
     </div>
-    <div class="process-carousel">
-      <button class="process-arrow prev" aria-label="Anterior">‹</button>
-      <div class="process-grid">
+    <div class="process-wrap">
+      <div class="process-grid" id="processTrack">
         <div class="process-step">
           <div class="process-step-num">1</div>
           <span class="process-step-icon">📋</span>
@@ -1572,9 +1542,10 @@
           <p>Recibes tu contenido listo para publicar en todas tus plataformas digitales.</p>
         </div>
       </div>
+      <button class="process-arrow prev" aria-label="Anterior">‹</button>
       <button class="process-arrow next" aria-label="Siguiente">›</button>
-      <div class="process-dots"></div>
     </div>
+    <div class="process-dots"></div>
   </div>
 </section>
 
@@ -2081,91 +2052,69 @@ document.addEventListener('keydown', function(event) {
 /* ──── PROCESS CAROUSEL (mobile) ──── */
 (function(){
   if (window.innerWidth > 600) return;
-  const track = document.querySelector('.process-grid');
-  if (!track) return;
-  const steps = track.querySelectorAll('.process-step');
+  const wrap = document.querySelector('.process-wrap');
+  const track = document.getElementById('processTrack');
+  if (!wrap || !track) return;
+  const steps = [...track.children];
   if (steps.length < 2) return;
+  let cur = 0, sx = 0, sy = 0, drag = false;
+
   const dots = document.querySelector('.process-dots');
-  const prevBtn = document.querySelector('.process-arrow.prev');
-  const nextBtn = document.querySelector('.process-arrow.next');
-  let current = 0;
-  let startX = 0, startY = 0;
-  let isDragging = false;
-  let dragOffset = 0;
+  const pBtn = document.querySelector('.process-arrow.prev');
+  const nBtn = document.querySelector('.process-arrow.next');
 
-  function getW(){
-    return track.parentElement.clientWidth;
+  function go(i, anim){
+    if (i < 0) i = steps.length - 1;
+    if (i >= steps.length) i = 0;
+    cur = i;
+    const w = wrap.clientWidth;
+    track.style.transition = anim ? 'transform 0.35s ease' : 'none';
+    track.style.transform = `translateX(-${cur * w}px)`;
+    steps.forEach((s, j) => s.classList.toggle('active', j === cur));
+    if (!dots) return;
+    [...dots.children].forEach((d, j) => d.classList.toggle('active', j === cur));
   }
 
-  function slideTo(idx, animate){
-    if (idx < 0) idx = steps.length - 1;
-    if (idx >= steps.length) idx = 0;
-    current = idx;
-    const w = getW();
-    track.style.transition = animate ? 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
-    track.style.transform = `translateX(-${current * w}px)`;
-    steps.forEach((s, i) => s.classList.toggle('active', i === current));
-    if (dots) {
-      const btns = dots.querySelectorAll('.process-dot');
-      btns.forEach((b, i) => b.classList.toggle('active', i === current));
-    }
-  }
-
-  function slideBy(dx){
-    track.style.transition = 'none';
-    track.style.transform = `translateX(${-current * getW() + dx}px)`;
-  }
-
-  // Create dots
-  if (dots) {
+  if (dots){
     dots.innerHTML = '';
     steps.forEach((_, i) => {
-      const dot = document.createElement('button');
-      dot.className = 'process-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Paso ${i + 1}`);
-      dot.addEventListener('click', () => slideTo(i, true));
-      dots.appendChild(dot);
+      const d = document.createElement('button');
+      d.className = 'process-dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => go(i, true));
+      dots.appendChild(d);
     });
   }
 
-  prevBtn?.addEventListener('click', () => slideTo(current - 1, true));
-  nextBtn?.addEventListener('click', () => slideTo(current + 1, true));
+  pBtn?.addEventListener('click', () => go(cur - 1, true));
+  nBtn?.addEventListener('click', () => go(cur + 1, true));
 
-  // Touch events
   track.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    isDragging = false;
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+    drag = false;
   }, { passive: true });
 
   track.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - startX;
-    const dy = e.touches[0].clientY - startY;
-    if (!isDragging) {
-      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) isDragging = true;
+    const dx = e.touches[0].clientX - sx;
+    const dy = e.touches[0].clientY - sy;
+    if (!drag){
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) drag = true;
       else return;
     }
     e.preventDefault();
-    slideBy(dx);
+    track.style.transition = 'none';
+    track.style.transform = `translateX(${-cur * wrap.clientWidth + dx}px)`;
   }, { passive: false });
 
   track.addEventListener('touchend', e => {
-    if (!isDragging) return;
-    const dx = e.changedTouches[0].clientX - startX;
-    const w = getW();
-    slideTo(Math.abs(dx) > w * 0.18 ? (dx < 0 ? current + 1 : current - 1) : current, true);
-    isDragging = false;
+    if (!drag) return;
+    const dx = e.changedTouches[0].clientX - sx;
+    go(Math.abs(dx) > wrap.clientWidth * 0.18 ? (dx < 0 ? cur + 1 : cur - 1) : cur, true);
+    drag = false;
   }, { passive: true });
 
-  track.addEventListener('touchcancel', () => {
-    if (!isDragging) return;
-    slideTo(current, true);
-    isDragging = false;
-  }, { passive: true });
-
-  // Init
-  slideTo(0, false);
-  window.addEventListener('resize', () => slideTo(current, false));
+  go(0, false);
+  window.addEventListener('resize', () => go(cur, false));
 })();
 
 /* ──── PRELOADER ──── */
