@@ -923,6 +923,10 @@
     .process-wrap { overflow: hidden; border-radius: 12px; }
     .process-step {
       flex: 0 0 100%;
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
       min-height: 260px;
       padding: 40px 28px;
     }
@@ -2067,7 +2071,7 @@ document.addEventListener('keydown', function(event) {
     if (i < 0) i = steps.length - 1;
     if (i >= steps.length) i = 0;
     cur = i;
-    const w = wrap.clientWidth;
+    const w = track.clientWidth;
     track.style.transition = anim ? 'transform 0.35s ease' : 'none';
     track.style.transform = `translateX(-${cur * w}px)`;
     steps.forEach((s, j) => s.classList.toggle('active', j === cur));
@@ -2103,13 +2107,13 @@ document.addEventListener('keydown', function(event) {
     }
     e.preventDefault();
     track.style.transition = 'none';
-    track.style.transform = `translateX(${-cur * wrap.clientWidth + dx}px)`;
+    track.style.transform = `translateX(${-cur * track.clientWidth + dx}px)`;
   }, { passive: false });
 
   track.addEventListener('touchend', e => {
     if (!drag) return;
     const dx = e.changedTouches[0].clientX - sx;
-    go(Math.abs(dx) > wrap.clientWidth * 0.18 ? (dx < 0 ? cur + 1 : cur - 1) : cur, true);
+    go(Math.abs(dx) > track.clientWidth * 0.18 ? (dx < 0 ? cur + 1 : cur - 1) : cur, true);
     drag = false;
   }, { passive: true });
 
